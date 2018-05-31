@@ -21,6 +21,7 @@
       <input type="radio" name="primary" value="blue">Blue
       <input type="radio" name="primary" value="yellow">Yellow
       <input type="radio" name="primary" value="green">Green
+      <input type="radio" name="primary" value="random">Random
     </div>
 
     <div id="secondary-color">
@@ -34,12 +35,10 @@
     </div>
 
     <script>
-      const GRID_HEIGHT = 720;
-      const GRID_WIDTH = 720;
-
+      const GRID_HEIGHT = 850;
+      const GRID_WIDTH = 850;
       const container = document.querySelector("#container");
       container.setAttribute("style", `width: ${GRID_WIDTH}px; height: ${GRID_HEIGHT}px; border: 3px solid green;`);
-
       const gridButton = document.querySelector("button");
       gridButton.addEventListener("click", e => {generateGrid(prompt("What size?"));});
       
@@ -48,26 +47,33 @@
       
       let primaryColor = "black";
       let secondaryColor = "white";
-
       generateGrid(16);
       
+      function generateRandomColor(){
+        let color = Math.floor(Math.random()*16777216);
+        return color.toString(16);
+      }
+   
       function updatePrimaryColor(){
         for(let i = 0;i < primaryColorRadios.length;i++){
-          if(primaryColorRadios[i].checked) primaryColor = primaryColorRadios[i].value;
+          if(primaryColorRadios[i].checked) {
+            if(primaryColorRadios[i].value === "random"){
+              primaryColor = `#${generateRandomColor()}`;
+            } else {
+              primaryColor = primaryColorRadios[i].value;
+            } 
+          }
         }
       }
-
       function updateSecondaryColor(){
         for(let i = 0;i < secondaryColorRadios.length;i++){
           if(secondaryColorRadios[i].checked) secondaryColor = secondaryColorRadios[i].value;
         }
       }
-
       function updateColors(){
         updatePrimaryColor();
         updateSecondaryColor();
       }
-
       function swapColors(node, firstColor, secondColor){
         if(node.style.background == firstColor){
           node.style.background = secondColor;
@@ -75,20 +81,16 @@
           node.style.background = firstColor;
         }
       }
-
       function clearGrid(){
         while(document.querySelector("#container").firstChild) {
           document.querySelector("#container").firstChild.remove();
         }
       }
-
       function generateGrid(size){
         clearGrid();
         for(var i = 0;i < size; i++){
-
           const row = document.createElement("div");
           row.setAttribute("style", `width: 100%; height: ${GRID_HEIGHT/size}px;`);
-
           for(var j = 0; j < size; j++){
             const cell = document.createElement("div"); 
             cell.setAttribute("style", `background: white; width: ${GRID_WIDTH/size}px;height: 100%;float: left;`);
@@ -98,7 +100,6 @@
             if(document.querySelector("#swap").checked) {swapColors(e.target, primaryColor, secondaryColor)}
             else {cell.style.background = primaryColor;}
             });
-
             row.appendChild(cell);
           }
         container.appendChild(row);
